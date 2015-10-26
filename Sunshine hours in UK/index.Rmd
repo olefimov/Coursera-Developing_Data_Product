@@ -1,0 +1,62 @@
+---
+title       : Using Shiny for interactive plots of Sunshine hours in the UK
+subtitle    : Source - the UK's National Weather Service
+author      : Oleg Efimov
+job         : 
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : standalone # {selfcontained, draft}
+knit        : slidify::knit2slides
+---
+
+## What is Shiny?
+
+It is a web application framework for R.
+
+Shiny apps are easy to write. No web development skills are required.
+
+Shiny combines the computational power of R with the interactivity of the modern web. 
+
+In this example we wil use time-series of monthly, seasonal and annual regional sunshine values published by the UK's National Weather Service as a data source and power of R code and Shiny to create an interactive plots of total hours of sunshine in the UK by month or by years range.
+
+---
+## Computations
+Regular R code is used for a computation in shiny apps.
+
+``` {r echo=FALSE }
+library(slidify)
+library(reshape)
+library(ggplot2)
+```
+
+```{r}
+#Loading weather stats
+sh <- read.csv(
+  "http://www.metoffice.gov.uk/pub/data/weather/uk/climate/datasets/Sunshine/date/UK.txt", 
+  skip = 7, sep = "")
+dim(sh)
+#Subsetting data
+sh <- sh[1:86,1:13]
+sh <- melt(sh,id='Year', variable_name = "Month")
+dim(sh)
+```
+
+---
+## Plots in Shiny
+Using inputs in a web page allows to create interactive plots 
+
+```{r echo=FALSE}
+sh_sub <- sh[sh$Month=='JUN',]
+qplot(Year,value,data = sh_sub, xlab = "Year", ylab = "Sunshine (total hours)", main = 'JUN') 
+
+```
+
+---
+## Plots in Shiny
+``` {r echo=FALSE}
+sh_range <- sh[sh$Year>=1930 & sh$Year<=2010,]
+#drawing a plot
+qplot(Year,value,data = sh_range, color = Month, xlab = "Year", ylab = "Sunshine (total hours)")
+```
